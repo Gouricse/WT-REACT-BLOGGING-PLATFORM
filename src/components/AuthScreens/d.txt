@@ -1,0 +1,361 @@
+import React, { useState } from "react";
+import { Navbar, Nav, Button, Container, Modal, Form, Row, Col } from "react-bootstrap";
+import { FaSun, FaMoon } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const App = () => {
+  const [darkMode, setDarkMode] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [registerUsername, setRegisterUsername] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+
+  const toggleTheme = () => {
+    setDarkMode((prevMode) => !prevMode);
+    document.body.className = darkMode ? "light-theme" : "dark-theme";
+  };
+
+  const loginHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post("/auth/login", {
+        email: loginEmail,
+        password: loginPassword,
+      });
+      localStorage.setItem("authToken", data.token);
+      setShowLogin(false); // Close modal
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.error || "Login failed. Please try again.");
+    }
+  };
+
+  const registerHandler = async (e) => {
+    e.preventDefault();
+    if (registerPassword !== registerConfirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    try {
+      await axios.post("/auth/register", {
+        username: registerUsername,
+        email: registerEmail,
+        password: registerPassword,
+      });
+      setShowRegister(false); // Close register modal
+      setShowLogin(true); // Open login modal
+    } catch (err) {
+      setError(err.response?.data?.error || "Registration failed.");
+    }
+  };
+
+  return (
+    <>
+      <Navbar
+        bg="dark"
+        expand="lg"
+        variant="dark"
+        style={{
+          padding: "0.5rem 1rem",
+          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.2)",
+          position: "sticky",
+          top: 0,
+          zIndex: 1000,
+        }}
+      >
+        <Container>
+          <Navbar.Brand href="/">KLE TECH Blogging Platform</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+            <Nav>
+              <Button
+                variant="primary"
+                onClick={() => setShowRegister(true)}
+                className="me-2"
+              >
+                Register
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setShowLogin(true)}
+                className="me-2"
+              >
+                Login
+              </Button>
+              <Button variant="link" onClick={toggleTheme} style={{ color: 'white', background: 'none' }}>
+                {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+
+      <div
+        className="hero-section"
+        style={{
+          backgroundImage:
+            'url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/d79c67a8-7603-46e4-b56f-fb9967f82eb2/debqlqh-e16d6b49-becb-430a-a9cb-258cd382cbca.jpg/v1/fill/w_1280,h_720,q_75,strp/black_mountains_dark_theme_wallpapers_by_mayankgorecha_debqlqh-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NzIwIiwicGF0aCI6IlwvZlwvZDc5YzY3YTgtNzYwMy00NmU0LWI1NmYtZmI5OTY3ZjgyZWIyXC9kZWJxbHFoLWUxNmQ2YjQ5LWJlY2ItNDMwYS1hOWNiLTI1OGNkMzgyY2JjYS5qcGciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.zWTmfYJc66Y81eVdi-jIzAV2YQSihmuAIsvrPhAPkwU")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          padding: '80px 0',
+          color: 'white',
+          textAlign: 'center',
+          height: '100vh',
+        }}
+      >
+        <Container>
+          <h1>Welcome to the KLE TECH Blogging Platform</h1>
+          <p>Share and explore ideas with the student community!</p>
+          <Button>
+            Get Started
+          </Button>
+        </Container>
+      </div>
+
+      <Container className="my-5">
+        <Row className="align-items-center">
+          <Col
+            md={6}
+
+          >
+            <img
+              src="https://img.freepik.com/free-vector/blog-post-concept-illustration_114360-26355.jpg"
+              alt="Blogimage"
+              className="img-fluid rounded"
+              style={{
+                width: '100%',
+                height: 'auto',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+                marginBottom: '30px',
+                transition: 'transform 0.5s ease-out',
+              }}
+            />
+          </Col>
+          <Col md={6}>
+            <h2>About the Student Blogging Community</h2>
+            <p>
+              The KLE TECH Blogging Platform is a space designed for students to share their thoughts, ideas, and knowledge with the community.
+              Join us to connect with like-minded individuals, expand your network, and be a part of the ever-growing student community.
+            </p>
+          </Col>
+        </Row>
+      </Container>
+
+      <Container className="my-5">
+        <Row className="align-items-center">
+          <Col md={6}>
+            <h2>About the KLE Technological University</h2>
+            <p>
+              KLE Technological University is a vibrant academic community that encourages students to explore, innovate, and excel in their respective fields.
+              It provides a nurturing environment for personal and professional growth, fostering a culture of collaboration and continuous learning.
+            </p>
+          </Col>
+          <Col
+            md={6}
+            className="text-center image-section order-md-2"
+          >
+            <img
+              src="https://www.kletech.ac.in/hubballi/images/abt-over-img.jpg"
+              alt="Blogimage"
+              className="img-fluid rounded"
+              style={{
+                width: '100%',
+                height: 'auto',
+                boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+                marginBottom: '30px',
+                transition: 'transform 0.5s ease-out',
+              }}
+            />
+          </Col>
+        </Row>
+      </Container>
+
+      {/* Login Modal */}
+      <Modal show={showLogin} onHide={() => setShowLogin(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Login</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex">
+            {/* Side Image */}
+            <div style={{ flex: 1, backgroundImage: "url('/path-to-your-image.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}></div>
+
+            {/* Login Form */}
+            <div style={{ flex: 2, padding: "1rem" }}>
+              <Form onSubmit={loginHandler}>
+                {error && (
+                  <div
+                    className="error_message text-danger"
+                    style={{
+                      fontWeight: "bold",
+                      marginBottom: "1rem",
+                      backgroundColor: "#f8d7da",
+                      padding: "10px",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
+                <Form.Group className="mb-3" controlId="loginEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="loginPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit" className="w-100 mb-3">
+                  Login
+                </Button>
+                <div className="text-center">
+                  <a href="/forgotpassword" className="text-decoration-none">Forgot password?</a>
+                  <p>
+                    Haven't created an account?{" "}
+                    <span
+                      className="text-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setShowLogin(false);
+                        setShowRegister(true);
+                      }}
+                    >
+                      Signup
+                    </span>
+                  </p>
+                </div>
+              </Form>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Register Modal */}
+      <Modal show={showRegister} onHide={() => setShowRegister(false)} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Register</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex">
+            {/* Side Image */}
+            <div style={{ flex: 1, backgroundImage: "url('')", backgroundSize: "cover", backgroundPosition: "center" }}></div>
+
+            {/* Register Form */}
+            <div style={{ flex: 2, padding: "1rem" }}>
+              <Form onSubmit={registerHandler}>
+                {error && (
+                  <div
+                    className="error_message text-danger"
+                    style={{
+                      fontWeight: "bold",
+                      marginBottom: "1rem",
+                      backgroundColor: "#f8d7da",
+                      padding: "10px",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
+                <Form.Group className="mb-3" controlId="registerUsername">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter username"
+                    value={registerUsername}
+                    onChange={(e) => setRegisterUsername(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="registerEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="registerPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Password"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="registerConfirmPassword">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Confirm password"
+                    value={registerConfirmPassword}
+                    onChange={(e) => setRegisterConfirmPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit" className="w-100 mb-3">
+                  Register
+                </Button>
+                <div className="text-center">
+                  <p>
+                    Already have an account?{" "}
+                    <span
+                      className="text-primary"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setShowRegister(false);
+                        setShowLogin(true);
+                      }}
+                    >
+                      Login
+                    </span>
+                  </p>
+                </div>
+              </Form>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <footer style={{ backgroundColor: '#475762', color: 'white', padding: '20px 0', marginTop: 'auto' }}>
+        <Container className="text-center">
+          <p>&copy; 2024 KLE TECH Blogging Platform. All rights reserved.</p>
+          <p>
+            <a href="https://kletech.ac.in" style={{ color: 'white' }} target="_blank" rel="noopener noreferrer">
+              Visit KLE TECH Website
+            </a>
+          </p>
+        </Container>
+      </footer>
+
+    </>
+  );
+};
+
+export default App;
